@@ -1,8 +1,9 @@
-import { up, cd } from './filesystem.js';
+import { up, cd, ls } from './filesystem.js';
 
 const Commands = {
     UP: 'up',
     CD: 'cd',
+    LS: 'ls',
 };
 
 export async function handleCommand(str) {
@@ -16,6 +17,10 @@ export async function handleCommand(str) {
         }
         case Commands.CD: {
             await cd(args);
+            break;
+        }
+        case Commands.LS: {
+            await ls();
             break;
         }
     }

@@ -38,3 +38,7 @@ function printGoodBuy() {
 export function printDir(dirName) {
     console.log(`You are currently in ${dirName}`);
 }
+
+export function printOperationFailed() {
+    console.log('Operation failed');
+}

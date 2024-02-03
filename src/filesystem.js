@@ -1,7 +1,7 @@
 import { homedir } from 'os';
 import * as path from 'node:path';
-import { printDir } from './console.js';
-import { access } from 'node:fs/promises';
+import { printDir, printOperationFailed } from './console.js';
+import { access, readdir } from 'node:fs/promises';
 
 let currentDir = homedir();
 
@@ -11,14 +11,43 @@ export function up() {
 }
 
 export async function cd(to) {
-    const newDir = path.join(currentDir, to);
+    const newDir = path.isAbsolute(to) ? to : path.join(currentDir, to);
 
     try {
         await access(newDir);
         currentDir = newDir;
     } catch {
-        console.log('Operation failed');
+        printOperationFailed();
     }
 
     printDir(currentDir);
+}
+
+export async function ls() {
+    try {
+        const content = await readdir(currentDir, { withFileTypes: true });
+
+        console.table(
+            content
+                .map((item) => {
+                    return {
+                        Name: item.name,
+                        Type: item.isDirectory() ? 'directory' : 'file',
+                    };
+                })
+                .sort((a, b) => {
+                    if (a.Type === 'directory' && b.Type === 'file') {
+                        return -1;
+                    }
+
+                    if (a.Type === 'file' && b.Type === 'directory') {
+                        return 1;
+                    }
+
+                    return a.Name.localeCompare(b.Name);
+                }),
+        );
+    } catch {
+        printOperationFailed();
+    }
 }
