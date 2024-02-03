@@ -2,6 +2,8 @@ import { homedir } from 'os';
 import * as path from 'node:path';
 import { printDir, printOperationFailed } from './console.js';
 import { access, readdir } from 'node:fs/promises';
+import { createReadStream } from 'node:fs';
+import { stdout } from 'node:process';
 
 let currentDir = homedir();
 
@@ -50,4 +52,13 @@ export async function ls() {
     } catch {
         printOperationFailed();
     }
+}
+
+export function cat(filepath) {
+    const stream = createReadStream(path.join(currentDir, filepath));
+    stream.pipe(stdout);
+    stream.on('end', () => {
+        console.log('\n');
+        printDir(currentDir);
+    });
 }
