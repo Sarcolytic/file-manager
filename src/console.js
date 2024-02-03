@@ -1,40 +1,30 @@
 import { homedir } from 'os';
-import { stdin } from 'node:process';
+import { stdin, stdout } from 'node:process';
+import { handleCommand } from './commands.js';
+import * as readline from 'node:readline';
 
-let command = '';
 let user = '';
 
-export function listenConsole(userName) {
+export function initConsole(userName) {
     user = userName;
 
-    setup();
     printHello();
     printDir(homedir());
 
-    stdin.on('data', (key) => {
-        // console.log(JSON.stringify(key.toString()));
-
-        // ctrl-c
-        if (key === '\u0003') {
-            printGoodBuy();
-            process.exit();
-        }
-
-        // TODO: check win
-        if (key === '\r') {
-            console.log(`\ncommand: ${command}`);
-            command = '';
-        } else {
-            command += key;
-            process.stdout.write(key);
-        }
-    });
+    stdin.setEncoding('utf8');
+    listen();
 }
 
-function setup() {
-    stdin.setRawMode(true);
-    stdin.resume();
-    stdin.setEncoding('utf8');
+function listen() {
+    const rl = readline.createInterface(stdin, stdout);
+    rl.on('line', (input) => {
+        handleCommand(input);
+    });
+
+    rl.on('SIGINT', () => {
+        printGoodBuy();
+        rl.close();
+    });
 }
 
 function printHello() {
@@ -45,6 +35,6 @@ function printGoodBuy() {
     console.log(`Thank you for using File Manager, ${user}, goodbye!`);
 }
 
-function printDir(dirName) {
+export function printDir(dirName) {
     console.log(`You are currently in ${dirName}`);
 }

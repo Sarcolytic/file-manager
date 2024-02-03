@@ -1,9 +1,9 @@
-import { listenConsole } from './console.js';
+import { initConsole } from './console.js';
 import { argv } from 'node:process';
 
 function start() {
     const user = getUserName();
-    listenConsole(user);
+    initConsole(user);
 }
 
 function getUserName() {
