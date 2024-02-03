@@ -5,7 +5,7 @@ const Commands = {
     CD: 'cd',
 };
 
-export function handleCommand(str) {
+export async function handleCommand(str) {
     const { args, command } = extractCommand(str);
     console.log(`\ncommand: ${command}, args: ${args}`);
 
@@ -15,7 +15,7 @@ export function handleCommand(str) {
             break;
         }
         case Commands.CD: {
-            cd(args);
+            await cd(args);
             break;
         }
     }

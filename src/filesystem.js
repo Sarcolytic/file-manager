@@ -1,6 +1,7 @@
 import { homedir } from 'os';
 import * as path from 'node:path';
 import { printDir } from './console.js';
+import { access } from 'node:fs/promises';
 
 let currentDir = homedir();
 
@@ -9,7 +10,15 @@ export function up() {
     printDir(currentDir);
 }
 
-export function cd(to) {
-    currentDir = path.join(currentDir, to);
+export async function cd(to) {
+    const newDir = path.join(currentDir, to);
+
+    try {
+        await access(newDir);
+        currentDir = newDir;
+    } catch {
+        console.log('Operation failed');
+    }
+
     printDir(currentDir);
 }

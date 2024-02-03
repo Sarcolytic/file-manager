@@ -17,8 +17,8 @@ export function initConsole(userName) {
 
 function listen() {
     const rl = readline.createInterface(stdin, stdout);
-    rl.on('line', (input) => {
-        handleCommand(input);
+    rl.on('line', async (input) => {
+        await handleCommand(input);
     });
 
     rl.on('SIGINT', () => {
