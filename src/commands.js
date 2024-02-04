@@ -1,4 +1,4 @@
-import { up, cd, ls, cat } from './filesystem.js';
+import { up, cd, ls, cat, add } from './filesystem.js';
 import { printInfo } from './os-info.js';
 
 const Commands = {
@@ -6,6 +6,7 @@ const Commands = {
     CD: 'cd',
     LS: 'ls',
     CAT: 'cat',
+    ADD: 'add',
 
     OS: 'os',
 };
@@ -15,26 +16,24 @@ export async function handleCommand(str) {
     console.log(`\ncommand: ${command}, args: ${args}`);
 
     switch (command) {
-        case Commands.UP: {
+        case Commands.UP:
             up();
             break;
-        }
-        case Commands.CD: {
+        case Commands.CD:
             await cd(args);
             break;
-        }
-        case Commands.LS: {
+        case Commands.LS:
             await ls();
             break;
-        }
-        case Commands.CAT: {
+        case Commands.CAT:
             cat(args);
             break;
-        }
-        case Commands.OS: {
+        case Commands.ADD:
+            await add(args);
+            break;
+        case Commands.OS:
             printInfo(args);
             break;
-        }
     }
 }
 

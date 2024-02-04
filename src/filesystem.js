@@ -1,8 +1,8 @@
 import { homedir } from 'os';
 import * as path from 'node:path';
 import { printDir, printOperationFailed } from './console.js';
-import { access, readdir } from 'node:fs/promises';
-import { createReadStream } from 'node:fs';
+import { access, readdir, writeFile } from 'node:fs/promises';
+import { createReadStream, constants } from 'node:fs';
 import { stdout } from 'node:process';
 
 let currentDir = homedir();
@@ -61,4 +61,27 @@ export function cat(filepath) {
         console.log('\n');
         printDir(currentDir);
     });
+}
+
+export async function add(fileName) {
+    const fileExists = await isFileExists(fileName);
+    if (fileExists) {
+        printOperationFailed();
+        return;
+    }
+
+    try {
+        await writeFile(path.join(currentDir, fileName), '');
+    } catch {
+        printOperationFailed();
+    }
+}
+
+async function isFileExists(name) {
+    try {
+        await access(path.join(currentDir, name), constants.F_OK);
+        return true;
+    } catch {
+        return false;
+    }
 }
