@@ -1,4 +1,4 @@
-import { up, cd, ls, cat, add } from './filesystem.js';
+import { up, cd, ls, cat, add, rn } from './filesystem.js';
 import { printInfo } from './os-info.js';
 
 const Commands = {
@@ -7,6 +7,7 @@ const Commands = {
     LS: 'ls',
     CAT: 'cat',
     ADD: 'add',
+    RN: 'rn',
 
     OS: 'os',
 };
@@ -30,6 +31,9 @@ export async function handleCommand(str) {
             break;
         case Commands.ADD:
             await add(args);
+            break;
+        case Commands.RN:
+            await rn(args);
             break;
         case Commands.OS:
             printInfo(args);

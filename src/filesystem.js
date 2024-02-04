@@ -1,7 +1,7 @@
 import { homedir } from 'os';
 import * as path from 'node:path';
 import { printDir, printOperationFailed } from './console.js';
-import { access, readdir, writeFile } from 'node:fs/promises';
+import { access, readdir, writeFile, rename } from 'node:fs/promises';
 import { createReadStream, constants } from 'node:fs';
 import { stdout } from 'node:process';
 
@@ -84,4 +84,34 @@ async function isFileExists(name) {
     } catch {
         return false;
     }
+}
+
+export async function rn(args) {
+    const { first: fileName, second: newFileName } = extractTwoArgs(args);
+
+    const fileExists = await isFileExists(fileName);
+    const newFileExists = await isFileExists(newFileName);
+    if (!fileExists && newFileExists) {
+        printOperationFailed();
+        return;
+    }
+
+    try {
+        await rename(path.join(currentDir, fileName), path.join(currentDir, newFileName));
+    } catch {
+        printOperationFailed();
+    }
+}
+
+function extractTwoArgs(args) {
+    const arr = args.split(' ');
+
+    if (arr.length < 2) {
+        printOperationFailed();
+    }
+
+    return {
+        first: arr[0].trim(),
+        second: arr[1].trim(),
+    };
 }
