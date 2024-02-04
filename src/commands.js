@@ -1,10 +1,13 @@
 import { up, cd, ls, cat } from './filesystem.js';
+import { printInfo } from './os-info.js';
 
 const Commands = {
     UP: 'up',
     CD: 'cd',
     LS: 'ls',
     CAT: 'cat',
+
+    OS: 'os',
 };
 
 export async function handleCommand(str) {
@@ -26,6 +29,11 @@ export async function handleCommand(str) {
         }
         case Commands.CAT: {
             cat(args);
+            break;
+        }
+        case Commands.OS: {
+            printInfo(args);
+            break;
         }
     }
 }
@@ -38,7 +46,7 @@ export async function handleCommand(str) {
 function extractCommand(str) {
     const arr = str.split(' ');
     const command = arr.shift();
-    const args = arr.join(' ');
+    const args = arr.join(' ').trim();
 
     return {
         command,

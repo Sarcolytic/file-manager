@@ -42,3 +42,7 @@ export function printDir(dirName) {
 export function printOperationFailed() {
     console.log('Operation failed');
 }
+
+export function printInvalidInput() {
+    console.log('Invalid input');
+}
