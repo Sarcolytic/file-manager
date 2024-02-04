@@ -86,12 +86,10 @@ async function isFileExists(name) {
     }
 }
 
-export async function rn(args) {
-    const { first: fileName, second: newFileName } = extractTwoArgs(args);
-
+export async function rn({ first: fileName, second: newFileName }) {
     const fileExists = await isFileExists(fileName);
     const newFileExists = await isFileExists(newFileName);
-    if (!fileExists && newFileExists) {
+    if (!fileExists || newFileExists) {
         printOperationFailed();
         return;
     }
@@ -101,17 +99,4 @@ export async function rn(args) {
     } catch {
         printOperationFailed();
     }
-}
-
-function extractTwoArgs(args) {
-    const arr = args.split(' ');
-
-    if (arr.length < 2) {
-        printOperationFailed();
-    }
-
-    return {
-        first: arr[0].trim(),
-        second: arr[1].trim(),
-    };
 }
