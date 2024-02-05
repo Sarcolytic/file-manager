@@ -57,11 +57,15 @@ export async function ls() {
 export function cat(filepath) {
     return new Promise((resolve) => {
         const stream = createReadStream(path.join(currentDir, filepath));
-        stream.pipe(stdout);
         stream.on('end', () => {
             console.log('\n');
             resolve();
         });
+        stream.on('error', () => {
+            printOperationFailed();
+            resolve();
+        });
+        stream.pipe(stdout);
     });
 }
 
@@ -107,7 +111,7 @@ export async function cp({ first: origin, second: copyTo }) {
     const isOriginExists = await isFileExists(origin);
     if (!isOriginExists) {
         printOperationFailed();
-        return Promise.resolve();
+        return Promise.resolve(false);
     }
 
     const copyToDir = path.isAbsolute(copyTo) ? copyTo : path.join(currentDir, copyTo);
@@ -115,17 +119,26 @@ export async function cp({ first: origin, second: copyTo }) {
         await access(copyToDir);
     } catch {
         printOperationFailed();
-        return Promise.resolve();
+        return Promise.resolve(false);
     }
 
     return new Promise((resolve) => {
         const readStream = createReadStream(path.join(currentDir, origin));
         const writeStream = createWriteStream(path.join(copyToDir, origin));
-        readStream.pipe(writeStream);
+        writeStream.on('error', () => {
+            printOperationFailed();
+            resolve(false);
+        });
+
         readStream.on('end', () => {
             console.log('\n');
+            resolve(true);
+        });
+        stream.on('error', () => {
+            printOperationFailed();
             resolve();
         });
+        readStream.pipe(writeStream);
     });
 }
 
@@ -135,4 +148,13 @@ export async function rm(fileName) {
     } catch {
         printOperationFailed();
     }
+}
+
+export async function mv({ first: origin, second: moveTo }) {
+    const copyResult = await cp({ first: origin, second: moveTo });
+    if (!copyResult) {
+        return Promise.resolve();
+    }
+
+    await rm(origin);
 }
