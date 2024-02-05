@@ -1,4 +1,4 @@
-import { up, cd, ls, cat, add, rn, cp } from './filesystem.js';
+import { up, cd, ls, cat, add, rn, cp, rm } from './filesystem.js';
 import { printInfo } from './os-info.js';
 import { printOperationFailed } from './console.js';
 
@@ -42,6 +42,9 @@ export async function handleCommand(str) {
             break;
         case Commands.CP:
             await cp(extractTwoArgs(args));
+            break;
+        case Commands.RM:
+            await rm(args);
             break;
         case Commands.OS:
             printInfo(args);

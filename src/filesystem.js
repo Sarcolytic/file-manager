@@ -1,7 +1,7 @@
 import { homedir } from 'os';
 import * as path from 'node:path';
 import { printDir, printOperationFailed } from './console.js';
-import { access, readdir, writeFile, rename } from 'node:fs/promises';
+import { access, readdir, writeFile, rename, unlink } from 'node:fs/promises';
 import { createReadStream, createWriteStream, constants } from 'node:fs';
 import { stdout } from 'node:process';
 
@@ -127,4 +127,12 @@ export async function cp({ first: origin, second: copyTo }) {
             resolve();
         });
     });
+}
+
+export async function rm(fileName) {
+    try {
+        await unlink(path.join(currentDir, fileName));
+    } catch {
+        printOperationFailed();
+    }
 }
