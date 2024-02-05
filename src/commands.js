@@ -1,6 +1,7 @@
-import { up, cd, ls, cat, add, rn, cp, rm, mv } from './filesystem.js';
+import { up, cd, ls, cat, add, rn, cp, rm, mv, getPath } from './filesystem.js';
 import { printInfo } from './os-info.js';
 import { printOperationFailed } from './console.js';
+import { createHash } from './hash.js';
 
 const Commands = {
     UP: 'up',
@@ -14,6 +15,7 @@ const Commands = {
     RM: 'rm',
 
     OS: 'os',
+    HASH: 'hash',
 };
 
 export async function handleCommand(str) {
@@ -47,6 +49,9 @@ export async function handleCommand(str) {
             break;
         case Commands.MV:
             await mv(extractTwoArgs(args));
+            break;
+        case Commands.HASH:
+            await createHash(getPath(args));
             break;
         case Commands.OS:
             printInfo(args);

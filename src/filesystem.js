@@ -13,7 +13,7 @@ export function up() {
 }
 
 export async function cd(to) {
-    const newDir = path.isAbsolute(to) ? to : path.join(currentDir, to);
+    const newDir = getPath(to);
 
     try {
         await access(newDir);
@@ -114,7 +114,7 @@ export async function cp({ first: origin, second: copyTo }) {
         return Promise.resolve(false);
     }
 
-    const copyToDir = path.isAbsolute(copyTo) ? copyTo : path.join(currentDir, copyTo);
+    const copyToDir = getPath(copyTo);
     try {
         await access(copyToDir);
     } catch {
@@ -157,4 +157,8 @@ export async function mv({ first: origin, second: moveTo }) {
     }
 
     await rm(origin);
+}
+
+export function getPath(inputPath) {
+    return path.isAbsolute(inputPath) ? inputPath : path.join(currentDir, inputPath);
 }
