@@ -1,4 +1,4 @@
-import { up, cd, ls, cat, add, rn } from './filesystem.js';
+import { up, cd, ls, cat, add, rn, cp } from './filesystem.js';
 import { printInfo } from './os-info.js';
 import { printOperationFailed } from './console.js';
 
@@ -10,6 +10,9 @@ const Commands = {
     ADD: 'add',
     RN: 'rn',
     CP: 'cp',
+
+    MV: 'mv',
+    RM: 'rm',
 
     OS: 'os',
 };
@@ -29,13 +32,16 @@ export async function handleCommand(str) {
             await ls();
             break;
         case Commands.CAT:
-            cat(args);
+            await cat(args);
             break;
         case Commands.ADD:
             await add(args);
             break;
         case Commands.RN:
             await rn(extractTwoArgs(args));
+            break;
+        case Commands.CP:
+            await cp(extractTwoArgs(args));
             break;
         case Commands.OS:
             printInfo(args);

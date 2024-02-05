@@ -2,7 +2,7 @@ import { homedir } from 'os';
 import * as path from 'node:path';
 import { printDir, printOperationFailed } from './console.js';
 import { access, readdir, writeFile, rename } from 'node:fs/promises';
-import { createReadStream, constants } from 'node:fs';
+import { createReadStream, createWriteStream, constants } from 'node:fs';
 import { stdout } from 'node:process';
 
 let currentDir = homedir();
@@ -55,11 +55,13 @@ export async function ls() {
 }
 
 export function cat(filepath) {
-    const stream = createReadStream(path.join(currentDir, filepath));
-    stream.pipe(stdout);
-    stream.on('end', () => {
-        console.log('\n');
-        printDir(currentDir);
+    return new Promise((resolve) => {
+        const stream = createReadStream(path.join(currentDir, filepath));
+        stream.pipe(stdout);
+        stream.on('end', () => {
+            console.log('\n');
+            resolve();
+        });
     });
 }
 
@@ -99,4 +101,30 @@ export async function rn({ first: fileName, second: newFileName }) {
     } catch {
         printOperationFailed();
     }
+}
+
+export async function cp({ first: origin, second: copyTo }) {
+    const isOriginExists = await isFileExists(origin);
+    if (!isOriginExists) {
+        printOperationFailed();
+        return Promise.resolve();
+    }
+
+    const copyToDir = path.isAbsolute(copyTo) ? copyTo : path.join(currentDir, copyTo);
+    try {
+        await access(copyToDir);
+    } catch {
+        printOperationFailed();
+        return Promise.resolve();
+    }
+
+    return new Promise((resolve) => {
+        const readStream = createReadStream(path.join(currentDir, origin));
+        const writeStream = createWriteStream(path.join(copyToDir, origin));
+        readStream.pipe(writeStream);
+        readStream.on('end', () => {
+            console.log('\n');
+            resolve();
+        });
+    });
 }
